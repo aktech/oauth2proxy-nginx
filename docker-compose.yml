@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  load-balancer:
+    image: nginx
+    ports: ["80:80"]
+    volumes: ["./nginx.conf:/etc/nginx/conf.d/default.conf:ro"]
+
+  web-server:
+    image: nginx
+    volumes: ["./index.html:/usr/share/nginx/html/index.html"]
+
+  authproxy:
+    build: .
+    command: /usr/bin/oauth2_proxy --upstream=http://127.0.0.1:80 --http-address="0.0.0.0:4180" --redirect-url=${REDIRECT_URL} --email-domain=${EMAIL_DOMAIN} --cookie-secret=${COOKIE_SECRET} --client-secret=${OAUTH2_SECRET} --client-id=${OAUTH2_ID} --cookie-secure=false
